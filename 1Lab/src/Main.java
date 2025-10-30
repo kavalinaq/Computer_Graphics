@@ -152,14 +152,125 @@ public class Main extends JFrame {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT,6,6));
         JButton chooser = new JButton("Выбрать цвет");
         chooser.addActionListener(e -> {
-            Color c = JColorChooser.showDialog(this, "Select Color", preview.getBackground());
-            if (c != null) {
-                updateFromRGB(c.getRed(), c.getGreen(), c.getBlue());
-            }
+            showCustomColorPalette();
         });
         p.add(chooser);
 
         return p;
+    }
+
+    private void showCustomColorPalette() {
+        JDialog colorDialog = new JDialog(this, "Выберите цвет", true);
+        colorDialog.setLayout(new BorderLayout());
+        colorDialog.setSize(500, 400);
+        colorDialog.setLocationRelativeTo(this);
+
+        JPanel colorGrid = new JPanel(new GridLayout(7, 7, 2, 2));
+        colorGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        Color[][] customColors = generateCustomPalette();
+
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                Color color = customColors[i][j];
+                JPanel colorBox = new JPanel();
+                colorBox.setBackground(color);
+                colorBox.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+                colorBox.setPreferredSize(new Dimension(40, 40));
+
+                colorBox.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        updateFromRGB(color.getRed(), color.getGreen(), color.getBlue());
+                        colorDialog.dispose();
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        colorBox.setBorder(new LineBorder(Color.BLACK, 2));
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        colorBox.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+                    }
+                });
+
+                colorGrid.add(colorBox);
+            }
+        }
+
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        JButton closeButton = new JButton("Закрыть");
+        closeButton.addActionListener(e -> colorDialog.dispose());
+        bottomPanel.add(closeButton);
+
+        colorDialog.add(colorGrid, BorderLayout.CENTER);
+        colorDialog.add(bottomPanel, BorderLayout.SOUTH);
+        colorDialog.setVisible(true);
+    }
+
+    private Color[][] generateCustomPalette() {
+        Color[][] palette = new Color[7][7];
+
+
+        palette[0][0] = new Color(255, 223, 223); // Очень светлый розовый
+        palette[0][1] = new Color(255, 233, 213); // Персиковый
+        palette[0][2] = new Color(255, 243, 203); // Светло-оранжевый
+        palette[0][3] = new Color(243, 255, 203); // Светло-лаймовый
+        palette[0][4] = new Color(223, 255, 223); // Мятный
+        palette[0][5] = new Color(223, 243, 255); // Светло-голубой
+        palette[0][6] = new Color(233, 223, 255); // Лавандовый
+
+        palette[1][0] = new Color(139, 69, 19);   // Седло-коричневый
+        palette[1][1] = new Color(160, 82, 45);   // Сиена
+        palette[1][2] = new Color(205, 133, 63);  // Перу
+        palette[1][3] = new Color(210, 180, 140); // Тан
+        palette[1][4] = new Color(188, 143, 143); // Розово-коричневый
+        palette[1][5] = new Color(165, 42, 42);   // Коричневый
+        palette[1][6] = new Color(222, 184, 135); // Бурливуд
+
+        palette[2][0] = new Color(72, 61, 139);   // Темный сине-фиолетовый
+        palette[2][1] = new Color(65, 105, 225);  // Королевский синий
+        palette[2][2] = new Color(70, 130, 180);  // Стальной синий
+        palette[2][3] = new Color(100, 149, 237); // Васильковый
+        palette[2][4] = new Color(32, 178, 170);  // Морская волна
+        palette[2][5] = new Color(46, 139, 87);   // Морской зеленый
+        palette[2][6] = new Color(60, 179, 113);  // Средний морской зеленый
+
+        palette[3][0] = new Color(75, 0, 130);    // Индиго
+        palette[3][1] = new Color(138, 43, 226);  // Сине-фиолетовый
+        palette[3][2] = new Color(147, 112, 219); // Средний пурпурный
+        palette[3][3] = new Color(186, 85, 211);  // Средняя орхидея
+        palette[3][4] = new Color(153, 50, 204);  // Темная орхидея
+        palette[3][5] = new Color(139, 0, 139);   // Темный пурпурный
+        palette[3][6] = new Color(148, 0, 211);   // Темный фиолетовый
+
+        palette[4][0] = new Color(112, 128, 144); // Сланцево-серый
+        palette[4][1] = new Color(119, 136, 153); // Светлый сланцево-серый
+        palette[4][2] = new Color(176, 196, 222); // Светлый стальной синий
+        palette[4][3] = new Color(230, 230, 250); // Лавандовый
+        palette[4][4] = new Color(245, 245, 220); // Бежевый
+        palette[4][5] = new Color(255, 228, 196); // Бисквитный
+        palette[4][6] = new Color(255, 235, 205); // Бланшированный миндаль
+
+        palette[5][0] = new Color(220, 20, 60);   // Малиновый
+        palette[5][1] = new Color(255, 69, 0);    // Красно-оранжевый
+        palette[5][2] = new Color(255, 140, 0);   // Темно-оранжевый
+        palette[5][3] = new Color(255, 215, 0);   // Золотой
+        palette[5][4] = new Color(154, 205, 50);  // Желто-зеленый
+        palette[5][5] = new Color(0, 250, 154);   // Средний весенний зеленый
+        palette[5][6] = new Color(0, 206, 209);   // Темный бирюзовый
+
+        palette[6][0] = new Color(25, 25, 112);   // Полуночный синий
+        palette[6][1] = new Color(47, 79, 79);    // Темный серо-синий
+        palette[6][2] = new Color(85, 107, 47);   // Темный оливково-зеленый
+        palette[6][3] = new Color(101, 67, 33);   // Темный желто-коричневый
+        palette[6][4] = new Color(139, 0, 0);     // Темно-красный
+        palette[6][5] = new Color(72, 40, 100);   // Темный фиолетово-синий
+        palette[6][6] = new Color(30, 30, 30);    // Почти черный
+
+        return palette;
     }
 
     private JPanel palette() {
