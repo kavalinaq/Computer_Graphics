@@ -14,7 +14,7 @@ public class Main extends JFrame {
     private JPanel preview;
 
     private boolean isUpdating = false;
-
+    private boolean ignoreCMYKUpdate = false;
 
     public Main() {
         super("Color Palette");
@@ -51,7 +51,6 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
 
     private JPanel rgbPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -105,15 +104,15 @@ public class Main extends JFrame {
 
         panel.add(sliders, BorderLayout.CENTER);
 
-        cSlider.addChangeListener(e -> { if (!isUpdating) updateFromCMYKSliders(); });
-        mSlider.addChangeListener(e -> { if (!isUpdating) updateFromCMYKSliders(); });
-        ySlider.addChangeListener(e -> { if (!isUpdating) updateFromCMYKSliders(); });
-        kSlider.addChangeListener(e -> { if (!isUpdating) updateFromCMYKSliders(); });
+        cSlider.addChangeListener(e -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKSliders(); });
+        mSlider.addChangeListener(e -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKSliders(); });
+        ySlider.addChangeListener(e -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKSliders(); });
+        kSlider.addChangeListener(e -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKSliders(); });
 
-        addFieldListener(cField, 0,100, val -> { if (!isUpdating) updateFromCMYKFields(); });
-        addFieldListener(mField, 0,100, val -> { if (!isUpdating) updateFromCMYKFields(); });
-        addFieldListener(yField, 0,100, val -> { if (!isUpdating) updateFromCMYKFields(); });
-        addFieldListener(kField, 0,100, val -> { if (!isUpdating) updateFromCMYKFields(); });
+        addFieldListener(cField, 0,100, val -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKFields(); });
+        addFieldListener(mField, 0,100, val -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKFields(); });
+        addFieldListener(yField, 0,100, val -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKFields(); });
+        addFieldListener(kField, 0,100, val -> { if (!isUpdating && !ignoreCMYKUpdate) updateFromCMYKFields(); });
 
         return panel;
     }
@@ -167,7 +166,7 @@ public class Main extends JFrame {
 
         JPanel colorGrid = new JPanel(new GridLayout(7, 7, 2, 2));
         colorGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
+
         Color[][] customColors = generateCustomPalette();
 
         for (int i = 0; i < 7; i++) {
@@ -213,62 +212,61 @@ public class Main extends JFrame {
     private Color[][] generateCustomPalette() {
         Color[][] palette = new Color[7][7];
 
+        palette[0][0] = new Color(255, 223, 223);
+        palette[0][1] = new Color(255, 233, 213);
+        palette[0][2] = new Color(255, 243, 203);
+        palette[0][3] = new Color(243, 255, 203);
+        palette[0][4] = new Color(223, 255, 223);
+        palette[0][5] = new Color(223, 243, 255);
+        palette[0][6] = new Color(233, 223, 255);
 
-        palette[0][0] = new Color(255, 223, 223); // Очень светлый розовый
-        palette[0][1] = new Color(255, 233, 213); // Персиковый
-        palette[0][2] = new Color(255, 243, 203); // Светло-оранжевый
-        palette[0][3] = new Color(243, 255, 203); // Светло-лаймовый
-        palette[0][4] = new Color(223, 255, 223); // Мятный
-        palette[0][5] = new Color(223, 243, 255); // Светло-голубой
-        palette[0][6] = new Color(233, 223, 255); // Лавандовый
+        palette[1][0] = new Color(139, 69, 19);
+        palette[1][1] = new Color(160, 82, 45);
+        palette[1][2] = new Color(205, 133, 63);
+        palette[1][3] = new Color(210, 180, 140);
+        palette[1][4] = new Color(188, 143, 143);
+        palette[1][5] = new Color(165, 42, 42);
+        palette[1][6] = new Color(222, 184, 135);
 
-        palette[1][0] = new Color(139, 69, 19);   // Седло-коричневый
-        palette[1][1] = new Color(160, 82, 45);   // Сиена
-        palette[1][2] = new Color(205, 133, 63);  // Перу
-        palette[1][3] = new Color(210, 180, 140); // Тан
-        palette[1][4] = new Color(188, 143, 143); // Розово-коричневый
-        palette[1][5] = new Color(165, 42, 42);   // Коричневый
-        palette[1][6] = new Color(222, 184, 135); // Бурливуд
+        palette[2][0] = new Color(72, 61, 139);
+        palette[2][1] = new Color(65, 105, 225);
+        palette[2][2] = new Color(70, 130, 180);
+        palette[2][3] = new Color(100, 149, 237);
+        palette[2][4] = new Color(32, 178, 170);
+        palette[2][5] = new Color(46, 139, 87);
+        palette[2][6] = new Color(60, 179, 113);
 
-        palette[2][0] = new Color(72, 61, 139);   // Темный сине-фиолетовый
-        palette[2][1] = new Color(65, 105, 225);  // Королевский синий
-        palette[2][2] = new Color(70, 130, 180);  // Стальной синий
-        palette[2][3] = new Color(100, 149, 237); // Васильковый
-        palette[2][4] = new Color(32, 178, 170);  // Морская волна
-        palette[2][5] = new Color(46, 139, 87);   // Морской зеленый
-        palette[2][6] = new Color(60, 179, 113);  // Средний морской зеленый
+        palette[3][0] = new Color(75, 0, 130);
+        palette[3][1] = new Color(138, 43, 226);
+        palette[3][2] = new Color(147, 112, 219);
+        palette[3][3] = new Color(186, 85, 211);
+        palette[3][4] = new Color(153, 50, 204);
+        palette[3][5] = new Color(139, 0, 139);
+        palette[3][6] = new Color(148, 0, 211);
 
-        palette[3][0] = new Color(75, 0, 130);    // Индиго
-        palette[3][1] = new Color(138, 43, 226);  // Сине-фиолетовый
-        palette[3][2] = new Color(147, 112, 219); // Средний пурпурный
-        palette[3][3] = new Color(186, 85, 211);  // Средняя орхидея
-        palette[3][4] = new Color(153, 50, 204);  // Темная орхидея
-        palette[3][5] = new Color(139, 0, 139);   // Темный пурпурный
-        palette[3][6] = new Color(148, 0, 211);   // Темный фиолетовый
+        palette[4][0] = new Color(112, 128, 144);
+        palette[4][1] = new Color(119, 136, 153);
+        palette[4][2] = new Color(176, 196, 222);
+        palette[4][3] = new Color(230, 230, 250);
+        palette[4][4] = new Color(245, 245, 220);
+        palette[4][5] = new Color(255, 228, 196);
+        palette[4][6] = new Color(255, 235, 205);
 
-        palette[4][0] = new Color(112, 128, 144); // Сланцево-серый
-        palette[4][1] = new Color(119, 136, 153); // Светлый сланцево-серый
-        palette[4][2] = new Color(176, 196, 222); // Светлый стальной синий
-        palette[4][3] = new Color(230, 230, 250); // Лавандовый
-        palette[4][4] = new Color(245, 245, 220); // Бежевый
-        palette[4][5] = new Color(255, 228, 196); // Бисквитный
-        palette[4][6] = new Color(255, 235, 205); // Бланшированный миндаль
+        palette[5][0] = new Color(220, 20, 60);
+        palette[5][1] = new Color(255, 69, 0);
+        palette[5][2] = new Color(255, 140, 0);
+        palette[5][3] = new Color(255, 215, 0);
+        palette[5][4] = new Color(154, 205, 50);
+        palette[5][5] = new Color(0, 250, 154);
+        palette[5][6] = new Color(0, 206, 209);
 
-        palette[5][0] = new Color(220, 20, 60);   // Малиновый
-        palette[5][1] = new Color(255, 69, 0);    // Красно-оранжевый
-        palette[5][2] = new Color(255, 140, 0);   // Темно-оранжевый
-        palette[5][3] = new Color(255, 215, 0);   // Золотой
-        palette[5][4] = new Color(154, 205, 50);  // Желто-зеленый
-        palette[5][5] = new Color(0, 250, 154);   // Средний весенний зеленый
-        palette[5][6] = new Color(0, 206, 209);   // Темный бирюзовый
-
-        palette[6][0] = new Color(25, 25, 112);   // Полуночный синий
-        palette[6][1] = new Color(47, 79, 79);    // Темный серо-синий
-        palette[6][2] = new Color(85, 107, 47);   // Темный оливково-зеленый
-        palette[6][3] = new Color(101, 67, 33);   // Темный желто-коричневый
-        palette[6][4] = new Color(139, 0, 0);     // Темно-красный
-        palette[6][5] = new Color(72, 40, 100);   // Темный фиолетово-синий
-        palette[6][6] = new Color(30, 30, 30);    // Почти черный
+        palette[6][0] = new Color(25, 25, 112);
+        palette[6][1] = new Color(47, 79, 79);
+        palette[6][2] = new Color(85, 107, 47);
+        palette[6][3] = new Color(101, 67, 33);
+        palette[6][4] = new Color(139, 0, 0);
+        palette[6][5] = new Color(72, 40, 100);
+        palette[6][6] = new Color(30, 30, 30);
 
         return palette;
     }
@@ -404,16 +402,40 @@ public class Main extends JFrame {
         yField.setText(String.valueOf(y));
         kField.setText(String.valueOf(k));
 
+
         int[] rgb = cmykToRgb(c/100.0, m/100.0, y/100.0, k/100.0);
 
+
+        ignoreCMYKUpdate = true;
         rSlider.setValue(rgb[0]);
         gSlider.setValue(rgb[1]);
         bSlider.setValue(rgb[2]);
         rField.setText(String.valueOf(rgb[0]));
         gField.setText(String.valueOf(rgb[1]));
         bField.setText(String.valueOf(rgb[2]));
+        ignoreCMYKUpdate = false;
 
-        applyRGBToAll(rgb[0], rgb[1], rgb[2]);
+
+        Color color = new Color(rgb[0], rgb[1], rgb[2]);
+        preview.setBackground(color);
+
+        float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
+        int hDeg = properRound(hsb[0] * 360f);
+        int sPerc = properRound(hsb[1] * 100f);
+        int vPerc = properRound(hsb[2] * 100f);
+
+        hDeg = hDeg % 360;
+        if (hDeg < 0) hDeg += 360;
+        sPerc = clamp(sPerc, 0, 100);
+        vPerc = clamp(vPerc, 0, 100);
+
+        hSlider.setValue(hDeg);
+        sSlider.setValue(sPerc);
+        vSlider.setValue(vPerc);
+        hField.setText(String.valueOf(hDeg));
+        sField.setText(String.valueOf(sPerc));
+        vField.setText(String.valueOf(vPerc));
+
         isUpdating = false;
     }
 
@@ -430,14 +452,36 @@ public class Main extends JFrame {
 
         int[] rgb = cmykToRgb(c/100.0, m/100.0, y/100.0, k/100.0);
 
+        ignoreCMYKUpdate = true;
         rSlider.setValue(rgb[0]);
         gSlider.setValue(rgb[1]);
         bSlider.setValue(rgb[2]);
         rField.setText(String.valueOf(rgb[0]));
         gField.setText(String.valueOf(rgb[1]));
         bField.setText(String.valueOf(rgb[2]));
+        ignoreCMYKUpdate = false;
 
-        applyRGBToAll(rgb[0], rgb[1], rgb[2]);
+
+        Color color = new Color(rgb[0], rgb[1], rgb[2]);
+        preview.setBackground(color);
+
+        float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
+        int hDeg = properRound(hsb[0] * 360f);
+        int sPerc = properRound(hsb[1] * 100f);
+        int vPerc = properRound(hsb[2] * 100f);
+
+        hDeg = hDeg % 360;
+        if (hDeg < 0) hDeg += 360;
+        sPerc = clamp(sPerc, 0, 100);
+        vPerc = clamp(vPerc, 0, 100);
+
+        hSlider.setValue(hDeg);
+        sSlider.setValue(sPerc);
+        vSlider.setValue(vPerc);
+        hField.setText(String.valueOf(hDeg));
+        sField.setText(String.valueOf(sPerc));
+        vField.setText(String.valueOf(vPerc));
+
         isUpdating = false;
     }
 
@@ -503,12 +547,12 @@ public class Main extends JFrame {
         int yPerc = properRound(cmyk[2] * 100);
         int kPerc = properRound(cmyk[3] * 100);
 
-
         cPerc = clamp(cPerc, 0, 100);
         mPerc = clamp(mPerc, 0, 100);
         yPerc = clamp(yPerc, 0, 100);
         kPerc = clamp(kPerc, 0, 100);
 
+        ignoreCMYKUpdate = true;
         cSlider.setValue(cPerc);
         mSlider.setValue(mPerc);
         ySlider.setValue(yPerc);
@@ -518,13 +562,13 @@ public class Main extends JFrame {
         mField.setText(String.valueOf(mPerc));
         yField.setText(String.valueOf(yPerc));
         kField.setText(String.valueOf(kPerc));
+        ignoreCMYKUpdate = false;
 
 
         float[] hsb = Color.RGBtoHSB(r, g, b, null);
         int hDeg = properRound(hsb[0] * 360f);
         int sPerc = properRound(hsb[1] * 100f);
         int vPerc = properRound(hsb[2] * 100f);
-
 
         hDeg = hDeg % 360;
         if (hDeg < 0) hDeg += 360;
@@ -551,42 +595,40 @@ public class Main extends JFrame {
         isUpdating = false;
     }
 
-    private int[] cmykToRgb(double c, double m, double y, double k) {
-
-        double rDouble = 255.0 * (1.0 - c) * (1.0 - k);
-        double gDouble = 255.0 * (1.0 - m) * (1.0 - k);
-        double bDouble = 255.0 * (1.0 - y) * (1.0 - k);
-
-        int r = properRound(rDouble);
-        int g = properRound(gDouble);
-        int b = properRound(bDouble);
-
-        r = clamp(r, 0, 255);
-        g = clamp(g, 0, 255);
-        b = clamp(b, 0, 255);
-        return new int[]{r, g, b};
-    }
-
     private double[] rgbToCmyk(int r, int g, int b) {
         double r1 = r / 255.0;
         double g1 = g / 255.0;
         double b1 = b / 255.0;
+
         double k = 1.0 - Math.max(r1, Math.max(g1, b1));
         double c, m, y;
 
-        if (k < 1.0 - 1e-9) {
+        if (k == 1.0) {
+            c = m = y = 0.0;
+        } else {
             c = (1.0 - r1 - k) / (1.0 - k);
             m = (1.0 - g1 - k) / (1.0 - k);
             y = (1.0 - b1 - k) / (1.0 - k);
-        } else {
-            c = m = y = 0;
         }
 
-        c = clampDouble(c, 0, 1);
-        m = clampDouble(m, 0, 1);
-        y = clampDouble(y, 0, 1);
-        k = clampDouble(k, 0, 1);
-        return new double[]{c, m, y, k};
+        return new double[]{
+                clampDouble(c, 0.0, 1.0),
+                clampDouble(m, 0.0, 1.0),
+                clampDouble(y, 0.0, 1.0),
+                clampDouble(k, 0.0, 1.0)
+        };
+    }
+
+    private int[] cmykToRgb(double c, double m, double y, double k) {
+        double r = 255.0 * (1.0 - c) * (1.0 - k);
+        double g = 255.0 * (1.0 - m) * (1.0 - k);
+        double b = 255.0 * (1.0 - y) * (1.0 - k);
+
+        return new int[]{
+                clamp((int)Math.round(r), 0, 255),
+                clamp((int)Math.round(g), 0, 255),
+                clamp((int)Math.round(b), 0, 255)
+        };
     }
 
     private Color hsvToRgb(int hDeg, double s, double v) {
