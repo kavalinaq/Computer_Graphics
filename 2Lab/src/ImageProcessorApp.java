@@ -29,7 +29,7 @@ public class ImageProcessorApp extends JFrame {
                 "Минимальный фильтр",
                 "Максимальный фильтр",
                 "Пороговая обработка (Отсу)",
-                "Пороговая обрабоктка (градиент яркости)"
+                "Пороговая обработка (градиент яркости)"
         });
 
         controlPanel.add(loadButton);
@@ -57,7 +57,9 @@ public class ImageProcessorApp extends JFrame {
             try {
                 originalImage = ImageIO.read(chooser.getSelectedFile());
                 processedImage = null;
-                imageLabel.setIcon(new ImageIcon(originalImage));
+                if (originalImage != null) {
+                    imageLabel.setIcon(new ImageIcon(originalImage));
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Ошибка загрузки изображения");
             }
@@ -65,7 +67,10 @@ public class ImageProcessorApp extends JFrame {
     }
 
     private void processImage() {
-        if (originalImage == null) return;
+        if (originalImage == null) {
+            JOptionPane.showMessageDialog(this, "Сначала загрузите изображение");
+            return;
+        }
 
         String method = (String) methodBox.getSelectedItem();
 
@@ -87,7 +92,9 @@ public class ImageProcessorApp extends JFrame {
                 break;
         }
 
-        imageLabel.setIcon(new ImageIcon(processedImage));
+        if (processedImage != null) {
+            imageLabel.setIcon(new ImageIcon(processedImage));
+        }
     }
 
     private void saveImage() {
@@ -137,6 +144,16 @@ public class ImageProcessorApp extends JFrame {
                 out.setRGB(x, y, res.getRGB());
             }
         }
+
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (y == 0 || y == h - 1 || x == 0 || x == w - 1) {
+                    out.setRGB(x, y, img.getRGB(x, y));
+                }
+            }
+        }
+
         return out;
     }
 
@@ -145,36 +162,46 @@ public class ImageProcessorApp extends JFrame {
         int h = img.getHeight();
         int[][] gray = new int[h][w];
 
-        for (int y = 0; y < h; y++) {
+        for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++) {
-                Color c = new Color(img.getRGB(x, y));
-                gray[y][x] = (c.getRed() + c.getGreen() + c.getBlue()) / 3;
+                Color c = new Color(img.getRGB(x,y));
+                gray[y][x] = (c.getRed()+c.getGreen()+c.getBlue())/3;
             }
-        }
 
+        int[][] grad = new int[h][w];
         int maxGrad = 0;
-        int threshold = 0;
 
-        for (int y = 1; y < h - 1; y++) {
-            for (int x = 1; x < w - 1; x++) {
-                int gx = gray[y][x + 1] - gray[y][x - 1];
-                int gy = gray[y + 1][x] - gray[y - 1][x];
-                int grad = (int)Math.sqrt(gx * gx + gy * gy);
-                if (grad > maxGrad) {
-                    maxGrad = grad;
-                    threshold = gray[y][x];
+        for (int y = 1; y < h-1; y++)
+            for (int x = 1; x < w-1; x++) {
+                int gx = gray[y][x+1] - gray[y][x-1];
+                int gy = gray[y+1][x] - gray[y-1][x];
+                int g = (int)Math.sqrt(gx*gx + gy*gy);
+                grad[y][x] = g;
+                if(g > maxGrad) maxGrad = g;
+            }
+
+        if (maxGrad == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "На изображении нет границ — градиент = 0.\n" +
+                            "Картинка слишком однородная или слишком сжатая.");
+            return img;
+        }
+
+        int threshold = (int)(maxGrad * 0.4);
+
+        BufferedImage out = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+
+        for (int y=0;y<h;y++)
+            for(int x=0;x<w;x++){
+                int v;
+                if (y == 0 || y == h-1 || x == 0 || x == w-1) {
+                    Color c = new Color(img.getRGB(x,y));
+                    v = (c.getRed()+c.getGreen()+c.getBlue())/3;
+                } else {
+                    v = grad[y][x] >= threshold ? 255 : 0;
                 }
+                out.setRGB(x,y,new Color(v,v,v).getRGB());
             }
-        }
-
-        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                int v = gray[y][x] >= threshold ? 255 : 0;
-                out.setRGB(x, y, new Color(v, v, v).getRGB());
-            }
-        }
 
         return out;
     }

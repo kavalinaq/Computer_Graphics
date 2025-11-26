@@ -1,15 +1,11 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 class RasterPanel extends JPanel {
-    private static final int GRID_SIZE = 40;      // количество делений
-    private static final int CELL_SIZE = 20;      // размер клетки
-    private static final int ORIGIN_X = 400;
-    private static final int ORIGIN_Y = 300;
-
+    private static final int GRID_SIZE = 40; // горизонтальные деления
+    private static final int CELL_SIZE = 20; // размер клетки
     private List<Point> points;
     private Color drawColor;
 
@@ -42,7 +38,7 @@ class RasterPanel extends JPanel {
         for (int i = 0; i < steps; i++) {
             x += xIncrement;
             y += yIncrement;
-            points.add(new Point((int)Math.round(x), (int)Math.round(y), drawColor));
+            points.add(new Point((int) Math.round(x), (int) Math.round(y), drawColor));
         }
 
         repaint();
@@ -113,14 +109,12 @@ class RasterPanel extends JPanel {
 
         while (y >= x) {
             x++;
-
             if (d > 0) {
                 y--;
                 d = d + 4 * (x - y) + 10;
             } else {
                 d = d + 4 * x + 6;
             }
-
             drawCirclePoints(xc, yc, x, y);
         }
 
@@ -145,82 +139,76 @@ class RasterPanel extends JPanel {
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawGrid(g2d);
-        drawAxes(g2d);
-        drawPoints(g2d);
+        int originX = getWidth() / 2;
+        int originY = getHeight() / 2;
+
+        drawGrid(g2d, originX, originY);
+        drawAxes(g2d, originX, originY);
+        drawPoints(g2d, originX, originY);
     }
 
-    private void drawGrid(Graphics2D g2d) {
+    private void drawGrid(Graphics2D g2d, int originX, int originY) {
         g2d.setColor(new Color(220, 220, 220));
+        int width = getWidth();
+        int height = getHeight();
 
-        for (int x = 0; x < getWidth(); x += CELL_SIZE) {
-            g2d.
-
-
-            drawLine(x, 0, x, getHeight());
+        for (int x = originX - GRID_SIZE * CELL_SIZE; x <= originX + GRID_SIZE * CELL_SIZE; x += CELL_SIZE) {
+            g2d.drawLine(x, 0, x, height);
         }
-        for (int y = 0; y < getHeight(); y += CELL_SIZE) {
-            g2d.drawLine(0, y, getWidth(), y);
+
+        for (int y = originY - 20 * CELL_SIZE; y <= originY + 20 * CELL_SIZE; y += CELL_SIZE) {
+            g2d.drawLine(0, y, width, y);
         }
     }
 
-    private void drawAxes(Graphics2D g2d) {
+    private void drawAxes(Graphics2D g2d, int originX, int originY) {
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(2));
 
-        g2d.drawLine(0, ORIGIN_Y, getWidth(), ORIGIN_Y);
-        g2d.drawLine(ORIGIN_X, 0, ORIGIN_X, getHeight());
+        g2d.drawLine(0, originY, getWidth(), originY);
+        g2d.drawLine(originX, 0, originX, getHeight());
 
-        drawArrow(g2d, getWidth() - 10, ORIGIN_Y, getWidth(), ORIGIN_Y);
-        drawArrow(g2d, ORIGIN_X, 10, ORIGIN_X, 0);
+        drawArrow(g2d, getWidth() - 10, originY, getWidth(), originY);
+        drawArrow(g2d, originX, 10, originX, 0);
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 12));
 
         for (int i = -GRID_SIZE; i <= GRID_SIZE; i++) {
-            if (i != 0) {
-                int x = ORIGIN_X + i * CELL_SIZE;
-
-                if (i % 5 == 0) {
-                    g2d.drawString(String.valueOf(i), x - 5, ORIGIN_Y + 15);
-                    g2d.drawLine(x, ORIGIN_Y - 3, x, ORIGIN_Y + 3);
-                }
+            if (i != 0 && i % 5 == 0) {
+                int x = originX + i * CELL_SIZE;
+                g2d.drawString(String.valueOf(i), x - 5, originY + 15);
+                g2d.drawLine(x, originY - 3, x, originY + 3);
             }
         }
 
-        for (int i = -GRID_SIZE; i <= GRID_SIZE; i++) {
-            if (i != 0) {
-                int y = ORIGIN_Y - i * CELL_SIZE;
-
-                if (i % 5 == 0) {
-                    g2d.drawString(String.valueOf(i), ORIGIN_X + 10, y + 5);
-                    g2d.drawLine(ORIGIN_X - 3, y, ORIGIN_X + 3, y);
-                }
+        for (int i = -20; i <= 20; i++) {
+            if (i != 0 && i % 5 == 0) {
+                int y = originY - i * CELL_SIZE;
+                g2d.drawString(String.valueOf(i), originX + 10, y + 5);
+                g2d.drawLine(originX - 3, y, originX + 3, y);
             }
         }
 
-        g2d.drawString("0", ORIGIN_X + 5, ORIGIN_Y + 15);
+        g2d.drawString("0", originX + 5, originY + 15);
     }
 
     private void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2) {
         g2d.drawLine(x1, y1, x2, y2);
         double angle = Math.atan2(y2 - y1, x2 - x1);
         int size = 10;
-
         g2d.drawLine(x2, y2,
-                (int)(x2 - size * Math.cos(angle - Math.PI / 6)),
-                (int)(y2 - size * Math.sin(angle - Math.PI / 6)));
+                (int) (x2 - size * Math.cos(angle - Math.PI / 6)),
+                (int) (y2 - size * Math.sin(angle - Math.PI / 6)));
         g2d.drawLine(x2, y2,
-                (int)(x2 - size * Math.cos(angle + Math.PI / 6)),
-                (int)(y2 - size * Math.sin(angle + Math.PI / 6)));
+                (int) (x2 - size * Math.cos(angle + Math.PI / 6)),
+                (int) (y2 - size * Math.sin(angle + Math.PI / 6)));
     }
 
-    private void drawPoints(Graphics2D g2d) {
+    private void drawPoints(Graphics2D g2d, int originX, int originY) {
         for (Point p : points) {
             g2d.setColor(p.color);
-
-            int px = ORIGIN_X + p.x * CELL_SIZE - CELL_SIZE / 2;
-            int py = ORIGIN_Y - p.y * CELL_SIZE - CELL_SIZE / 2;
-
+            int px = originX + p.x * CELL_SIZE - CELL_SIZE / 2;
+            int py = originY - p.y * CELL_SIZE - CELL_SIZE / 2;
             g2d.fillRect(px, py, CELL_SIZE, CELL_SIZE);
             g2d.setColor(Color.BLACK);
             g2d.drawRect(px, py, CELL_SIZE, CELL_SIZE);
