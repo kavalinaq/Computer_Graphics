@@ -1,10 +1,6 @@
 import javax.swing.*;
 
-public class Main {
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            RasterAlgorithmsFrame frame = new RasterAlgorithmsFrame();
-            frame.setVisible(true);
-        });
-    }
+public class Main { public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> new RasterAlgorithmsFrame().setVisible(true));
+}
 }

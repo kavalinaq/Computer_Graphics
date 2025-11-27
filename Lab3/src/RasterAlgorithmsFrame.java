@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,9 +9,11 @@ public class RasterAlgorithmsFrame extends JFrame {
     private JComboBox<String> algorithmComboBox;
     private JSpinner x1Spinner, y1Spinner, x2Spinner, y2Spinner, radiusSpinner;
     private JButton drawButton, clearButton;
+    private JButton zoomInButton, zoomOutButton, resetZoomButton;
+    private JLabel scaleLabel;
 
     public RasterAlgorithmsFrame() {
-        setTitle("Алгоритмы растеризации");
+        setTitle("Алгоритмы растеризации с масштабированием");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
         setLocationRelativeTo(null);
@@ -22,7 +23,8 @@ public class RasterAlgorithmsFrame extends JFrame {
     }
 
     private void initializeComponents() {
-        rasterPanel = new RasterPanel();
+        scaleLabel = new JLabel("Масштаб: 1.0x");
+        rasterPanel = new RasterPanel(scaleLabel);
 
         String[] algorithms = {
                 "Пошаговый алгоритм (отрезок)",
@@ -42,8 +44,16 @@ public class RasterAlgorithmsFrame extends JFrame {
         drawButton = new JButton("Построить");
         clearButton = new JButton("Очистить");
 
+        zoomInButton = new JButton("Увеличить (+)");
+        zoomOutButton = new JButton("Уменьшить (-)");
+        resetZoomButton = new JButton("Сбросить масштаб");
+
         drawButton.addActionListener(new DrawButtonListener());
         clearButton.addActionListener(e -> rasterPanel.clearPoints());
+
+        zoomInButton.addActionListener(e -> rasterPanel.zoomIn());
+        zoomOutButton.addActionListener(e -> rasterPanel.zoomOut());
+        resetZoomButton.addActionListener(e -> rasterPanel.resetZoom());
 
         algorithmComboBox.addActionListener(e -> updateInterface());
 
@@ -112,6 +122,32 @@ public class RasterAlgorithmsFrame extends JFrame {
         gbc.gridx = 1;
         controlPanel.add(clearButton, gbc);
 
+        y++;
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        controlPanel.add(new JSeparator(), gbc);
+        gbc.gridwidth = 1;
+
+        y++;
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        controlPanel.add(new JLabel("Масштабирование:"), gbc);
+        gbc.gridwidth = 1;
+
+        y++;
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        controlPanel.add(scaleLabel, gbc);
+        gbc.gridwidth = 1;
+
+        y++;
+        gbc.gridx = 0; gbc.gridy = y;
+        controlPanel.add(zoomInButton, gbc);
+        gbc.gridx = 1;
+        controlPanel.add(zoomOutButton, gbc);
+
+        y++;
+        gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 2;
+        controlPanel.add(resetZoomButton, gbc);
+        gbc.gridwidth = 1;
+
         add(controlPanel, BorderLayout.WEST);
         add(rasterPanel, BorderLayout.CENTER);
     }
@@ -123,10 +159,7 @@ public class RasterAlgorithmsFrame extends JFrame {
             int y1 = (Integer) y1Spinner.getValue();
             int x2 = (Integer) x2Spinner.getValue();
             int y2 = (Integer) y2Spinner.getValue();
-            int radius = (Integer) radiusSpinner.
-
-
-            getValue();
+            int radius = (Integer) radiusSpinner.getValue();
 
             String algorithm = (String) algorithmComboBox.getSelectedItem();
 
@@ -146,4 +179,6 @@ public class RasterAlgorithmsFrame extends JFrame {
             }
         }
     }
+
+
 }

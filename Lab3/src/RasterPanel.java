@@ -4,16 +4,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 class RasterPanel extends JPanel {
-    private static final int GRID_SIZE = 40; // горизонтальные деления
-    private static final int CELL_SIZE = 20; // размер клетки
+    private static final int GRID_SIZE = 40; 
+    private static final int BASE_CELL_SIZE = 20;
     private List<Point> points;
     private Color drawColor;
+    private double scale = 1.0;
+    private JLabel scaleLabel;
 
-    public RasterPanel() {
+    public RasterPanel(JLabel scaleLabel) {
         points = new ArrayList<>();
         drawColor = Color.RED;
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(900, 700));
+        this.scaleLabel = scaleLabel;
+        updateScaleLabel();
+    }
+
+    public void zoomIn() {
+        scale *= 1.2;
+        updateScaleLabel();
+        repaint();
+    }
+
+    public void zoomOut() {
+        scale /= 1.2;
+        updateScaleLabel();
+        repaint();
+    }
+
+    public void resetZoom() {
+        scale = 1.0;
+        updateScaleLabel();
+        repaint();
+    }
+
+    private void updateScaleLabel() {
+        scaleLabel.setText(String.format("Масштаб: %.1fx", scale));
+    }
+
+    private int getCellSize() {
+        return (int) (BASE_CELL_SIZE * scale);
+    }
+
+    private int getVisibleGridSize() {
+        return (int) (GRID_SIZE / scale);
     }
 
     public void clearPoints() {
@@ -151,12 +185,14 @@ class RasterPanel extends JPanel {
         g2d.setColor(new Color(220, 220, 220));
         int width = getWidth();
         int height = getHeight();
+        int cellSize = getCellSize();
+        int visibleGridSize = getVisibleGridSize();
 
-        for (int x = originX - GRID_SIZE * CELL_SIZE; x <= originX + GRID_SIZE * CELL_SIZE; x += CELL_SIZE) {
+        for (int x = originX - visibleGridSize * cellSize; x <= originX + visibleGridSize * cellSize; x += cellSize) {
             g2d.drawLine(x, 0, x, height);
         }
 
-        for (int y = originY - 20 * CELL_SIZE; y <= originY + 20 * CELL_SIZE; y += CELL_SIZE) {
+        for (int y = originY - visibleGridSize * cellSize; y <= originY + visibleGridSize * cellSize; y += cellSize) {
             g2d.drawLine(0, y, width, y);
         }
     }
@@ -173,17 +209,20 @@ class RasterPanel extends JPanel {
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        for (int i = -GRID_SIZE; i <= GRID_SIZE; i++) {
+        int cellSize = getCellSize();
+        int visibleGridSize = getVisibleGridSize();
+
+        for (int i = -visibleGridSize; i <= visibleGridSize; i++) {
             if (i != 0 && i % 5 == 0) {
-                int x = originX + i * CELL_SIZE;
+                int x = originX + i * cellSize;
                 g2d.drawString(String.valueOf(i), x - 5, originY + 15);
                 g2d.drawLine(x, originY - 3, x, originY + 3);
             }
         }
 
-        for (int i = -20; i <= 20; i++) {
+        for (int i = -visibleGridSize; i <= visibleGridSize; i++) {
             if (i != 0 && i % 5 == 0) {
-                int y = originY - i * CELL_SIZE;
+                int y = originY - i * cellSize;
                 g2d.drawString(String.valueOf(i), originX + 10, y + 5);
                 g2d.drawLine(originX - 3, y, originX + 3, y);
             }
@@ -204,14 +243,17 @@ class RasterPanel extends JPanel {
                 (int) (y2 - size * Math.sin(angle + Math.PI / 6)));
     }
 
+
     private void drawPoints(Graphics2D g2d, int originX, int originY) {
+        int cellSize = getCellSize();
+
         for (Point p : points) {
             g2d.setColor(p.color);
-            int px = originX + p.x * CELL_SIZE - CELL_SIZE / 2;
-            int py = originY - p.y * CELL_SIZE - CELL_SIZE / 2;
-            g2d.fillRect(px, py, CELL_SIZE, CELL_SIZE);
+            int px = originX + p.x * cellSize - cellSize / 2;
+            int py = originY - p.y * cellSize - cellSize / 2;
+            g2d.fillRect(px, py, cellSize, cellSize);
             g2d.setColor(Color.BLACK);
-            g2d.drawRect(px, py, CELL_SIZE, CELL_SIZE);
+            g2d.drawRect(px, py, cellSize, cellSize);
         }
     }
 
